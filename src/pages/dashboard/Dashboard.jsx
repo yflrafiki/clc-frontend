@@ -1,25 +1,11 @@
+import { useEffect, useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import { FaCross, FaUsers, FaHeart, FaChartBar } from 'react-icons/fa';
 import { LuClipboardList, LuCalendarDays, LuLayoutDashboard } from 'react-icons/lu';
-
-const data = [
-  { name: 'Jan', Tithes: 4000, Welfare: 1200 },
-  { name: 'Feb', Tithes: 3000, Welfare: 900 },
-  { name: 'Mar', Tithes: 5000, Welfare: 1500 },
-  { name: 'Apr', Tithes: 4200, Welfare: 1100 },
-  { name: 'May', Tithes: 6000, Welfare: 2000 },
-  { name: 'Jun', Tithes: 5500, Welfare: 1800 },
-];
-
-const STATS = [
-  { label: 'Total Members', value: '320', Icon: FaUsers, bg: 'from-indigo-50 to-blue-50', border: 'border-indigo-200', text: 'text-indigo-800' },
-  { label: 'Weekly Attendance', value: '210', Icon: LuClipboardList, bg: 'from-rose-50 to-red-50', border: 'border-rose-200', text: 'text-rose-800' },
-  { label: 'Total Tithes', value: 'GH₵ 12,000', Icon: FaCross, bg: 'from-amber-50 to-yellow-50', border: 'border-amber-200', text: 'text-amber-800' },
-  { label: 'Welfare Contributions', value: 'GH₵ 4,200', Icon: FaHeart, bg: 'from-emerald-50 to-teal-50', border: 'border-emerald-200', text: 'text-emerald-800' },
-];
+import API from '../../api/axios';
 
 const QUICK_LINKS = [
   { label: 'Members', to: '/members', Icon: FaUsers, color: 'from-indigo-800 to-sky-600' },
@@ -33,6 +19,29 @@ const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewB
 
 export default function Dashboard() {
   const day = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const [stats, setStats] = useState(null);
+  const [monthly, setMonthly] = useState([]);
+
+  useEffect(() => {
+    API.get('/dashboard')
+      .then((res) => {
+        setStats(res.data);
+        setMonthly(res.data.monthly || []);
+      })
+      .catch((err) => {
+        console.log('Failed to load dashboard stats', err);
+      });
+  }, []);
+
+  const cedi = (value) => `GH₵ ${Number(value || 0).toLocaleString()}`;
+
+  const STATS = [
+    { label: 'Total Members', value: stats ? stats.total_members : '—', Icon: FaUsers, bg: 'from-indigo-50 to-blue-50', border: 'border-indigo-200', text: 'text-indigo-800' },
+    { label: 'Weekly Attendance', value: stats ? stats.weekly_attendance : '—', Icon: LuClipboardList, bg: 'from-rose-50 to-red-50', border: 'border-rose-200', text: 'text-rose-800' },
+    { label: 'Total Tithes', value: stats ? cedi(stats.total_tithes) : '—', Icon: FaCross, bg: 'from-amber-50 to-yellow-50', border: 'border-amber-200', text: 'text-amber-800' },
+    { label: 'Welfare Contributions', value: stats ? cedi(stats.total_welfare) : '—', Icon: FaHeart, bg: 'from-emerald-50 to-teal-50', border: 'border-emerald-200', text: 'text-emerald-800' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -81,7 +90,7 @@ export default function Dashboard() {
             <h2 className="font-semibold text-gray-700 dark:text-white text-sm">Tithes & Welfare Overview</h2>
           </div>
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={data} barGap={4}>
+            <BarChart data={monthly} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
