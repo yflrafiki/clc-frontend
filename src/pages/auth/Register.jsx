@@ -1,0 +1,147 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import API from '../../api/axios';
+import toast from 'react-hot-toast';
+import { FaCross } from 'react-icons/fa';
+import { LuMail, LuLock, LuUser, LuUserPlus } from 'react-icons/lu';
+
+const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
+
+export default function Register() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ full_name: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await API.post('/auth/register', form);
+      toast.success('Account created! Welcome to the family.');
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex">
+
+      {/* Left Panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-gray-950 via-emerald-950 to-gray-900 flex-col items-center justify-center p-12 text-white">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: BG_PATTERN }}></div>
+        <div className="relative flex flex-col items-center text-center gap-6 max-w-sm">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-500 flex items-center justify-center shadow-2xl">
+            <FaCross className="text-white text-3xl" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold">Join the Family</h1>
+            <p className="text-sm text-white/50 mt-1 uppercase tracking-widest">Christian Life Way Church</p>
+          </div>
+          <div className="border-t border-white/10 pt-6 space-y-4 w-full">
+            {[
+              { ref: '1 Corinthians 12:27', text: '"Now you are the body of Christ, and each one of you is a part of it."' },
+              { ref: 'Romans 15:7', text: '"Welcome one another as Christ has welcomed you, for the glory of God."' },
+            ].map((s) => (
+              <div key={s.ref} className="bg-white/5 rounded-xl px-4 py-3 text-left border border-white/10">
+                <p className="text-xs text-white/60 italic">{s.text}</p>
+                <p className="text-xs text-amber-400 font-semibold mt-1">{s.ref}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-6 py-12">
+        <div className="w-full max-w-md">
+
+          {/* Mobile branding */}
+          <div className="flex lg:hidden items-center gap-3 mb-8 justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 to-yellow-500 flex items-center justify-center shadow">
+              <FaCross className="text-white text-sm" />
+            </div>
+            <div>
+              <p className="font-bold text-gray-800 dark:text-white text-sm">Christian Life Way</p>
+              <p className="text-xs text-gray-400 uppercase tracking-widest">Church RMS</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Create Account</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Join the Christian Life Way family today</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Full Name</label>
+              <div className="relative">
+                <LuUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  required
+                  placeholder="John Doe"
+                  value={form.full_name}
+                  onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Email Address</label>
+              <div className="relative">
+                <LuMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Password</label>
+              <div className="relative">
+                <LuLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-800 to-teal-600 hover:from-emerald-900 hover:to-teal-700 text-white py-2.5 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60"
+            >
+              <LuUserPlus />
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Already have an account?{' '}
+              <Link to="/" className="text-emerald-600 hover:underline font-semibold">Sign in</Link>
+            </p>
+          </div>
+
+          <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
+            <p className="text-xs text-center text-gray-400 italic">"Welcome one another as Christ has welcomed you" — Romans 15:7</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
