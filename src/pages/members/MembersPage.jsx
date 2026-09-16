@@ -5,7 +5,7 @@ import { FaUsers, FaUserCheck, FaUserTimes } from 'react-icons/fa';
 import { LuUserPlus, LuSearch, LuX } from 'react-icons/lu';
 
 const EMPTY_FORM = {
-  full_name: '', gender: '', date_of_birth: '', phone_number: '',
+  full_name: '', email: '', gender: '', date_of_birth: '', phone_number: '',
   address: '', date_joined: '', emergency_contact: '', status: 'Active',
 };
 
@@ -14,6 +14,7 @@ export default function MembersPage() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchMembers = async () => {
     try {
@@ -28,6 +29,8 @@ export default function MembersPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     try {
       await API.post('/members', form);
       toast.success('Member added successfully');
@@ -36,6 +39,8 @@ export default function MembersPage() {
       fetchMembers();
     } catch {
       toast.error('Failed to add member');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -163,6 +168,7 @@ export default function MembersPage() {
             <form onSubmit={handleSubmit} className="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { label: 'Full Name', key: 'full_name', type: 'text', required: true },
+                { label: 'Email Address', key: 'email', type: 'email' },
                 { label: 'Phone Number', key: 'phone_number', type: 'text' },
                 { label: 'Date of Birth', key: 'date_of_birth', type: 'date' },
                 { label: 'Date Joined', key: 'date_joined', type: 'date' },
@@ -205,9 +211,9 @@ export default function MembersPage() {
               <div className="md:col-span-2 flex gap-3 pt-1">
                 <button type="button" onClick={() => setShowModal(false)}
                   className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
-                <button type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-800 to-sky-600 hover:from-indigo-900 hover:to-sky-700 text-white py-2 rounded-lg text-sm font-semibold transition shadow">
-                  <LuUserPlus /> Add Member
+                <button type="submit" disabled={submitting}
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-800 to-sky-600 hover:from-indigo-900 hover:to-sky-700 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60 disabled:cursor-not-allowed">
+                  <LuUserPlus /> {submitting ? 'Saving...' : 'Add Member'}
                 </button>
               </div>
             </form>
