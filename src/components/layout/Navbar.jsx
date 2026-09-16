@@ -33,7 +33,7 @@ export default function Navbar({ onMenuClick }) {
             <FaCross className="text-white text-xs" />
           </div>
           <div>
-            <p className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium leading-none mb-0.5">Christian Life Way</p>
+            <p className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium leading-none mb-0.5">LifeWay Church</p>
             <h2 className="text-sm font-bold text-gray-800 dark:text-white leading-none">{title}</h2>
           </div>
         </div>

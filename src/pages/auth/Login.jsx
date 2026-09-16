@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { FaCross } from 'react-icons/fa';
 import { LuMail, LuLock, LuLogIn, LuEye, LuEyeOff } from 'react-icons/lu';
+import { useAuth } from '../../context/AuthContext';
 
 const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +20,7 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await API.post('/auth/login', form);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      login(res.data.user, res.data.token);
       toast.success('Welcome back! God bless you.');
       navigate('/dashboard');
     } catch (error) {
@@ -125,13 +126,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-indigo-600 hover:underline font-semibold">Create one</Link>
-            </p>
-          </div>
 
           <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
             <p className="text-xs text-center text-gray-400 italic">"To God be the glory, great things He has done" — Fanny Crosby</p>

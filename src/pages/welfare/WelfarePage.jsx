@@ -3,6 +3,7 @@ import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { FaHeart, FaHandshake } from 'react-icons/fa';
 import { LuCoins, LuCalendarDays, LuClipboardList, LuPlus, LuX, LuUsers } from 'react-icons/lu';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const EMPTY_FORM = { member_id: '', amount: '', purpose: '', date_paid: '' };
 const PURPOSES = ['Medical', 'Bereavement', 'Education', 'Emergency', 'Other'];
@@ -13,6 +14,7 @@ export default function WelfarePage() {
   const [contributions, setContributions] = useState([]);
   const [paidMembers, setPaidMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('records');
@@ -37,8 +39,13 @@ export default function WelfarePage() {
     } catch {}
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -239,13 +246,21 @@ export default function WelfarePage() {
                 <button type="button" onClick={() => setShowModal(false)}
                   className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
                 <button type="submit" disabled={submitting}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-800 to-teal-600 hover:from-emerald-900 hover:to-teal-700 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60 disabled:cursor-not-allowed">
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-800 to-teal-600 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60">
                   <FaHeart /> {submitting ? 'Saving...' : 'Record Contribution'}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmDialog
+          message={`Record a welfare contribution of GH₵ ${Number(form.amount).toLocaleString()}?`}
+          onConfirm={confirmSubmit}
+          onCancel={() => setShowConfirm(false)}
+        />
       )}
     </div>
   );

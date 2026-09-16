@@ -3,6 +3,7 @@ import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { FaCross } from 'react-icons/fa';
 import { LuCoins, LuCalendarDays, LuClipboardList, LuPlus, LuX, LuUsers } from 'react-icons/lu';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const EMPTY_FORM = { member_id: '', amount: '', payment_method: 'Cash', date_paid: '', notes: '' };
 const PAYMENT_METHODS = ['Cash', 'Mobile Money', 'Bank Transfer', 'Cheque'];
@@ -13,6 +14,7 @@ export default function TithesPage() {
   const [tithes, setTithes] = useState([]);
   const [paidMembers, setPaidMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('records');
@@ -37,8 +39,13 @@ export default function TithesPage() {
     } catch {}
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -58,6 +65,8 @@ export default function TithesPage() {
   const thisMonth = tithes
     .filter(t => new Date(t.date_paid).getMonth() === new Date().getMonth())
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+  const selectedMember = members.find(m => String(m.id) === String(form.member_id));
 
   return (
     <div className="space-y-6">
@@ -245,13 +254,21 @@ export default function TithesPage() {
                 <button type="button" onClick={() => setShowModal(false)}
                   className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
                 <button type="submit" disabled={submitting}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-700 to-yellow-600 hover:from-amber-800 hover:to-yellow-700 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60 disabled:cursor-not-allowed">
+                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-700 to-yellow-600 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60">
                   <FaCross /> {submitting ? 'Saving...' : 'Record Tithe'}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmDialog
+          message={`Record a tithe of GH₵ ${Number(form.amount).toLocaleString()} for ${selectedMember?.full_name || 'this member'}?`}
+          onConfirm={confirmSubmit}
+          onCancel={() => setShowConfirm(false)}
+        />
       )}
     </div>
   );

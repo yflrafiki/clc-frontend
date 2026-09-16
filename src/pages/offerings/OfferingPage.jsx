@@ -3,6 +3,9 @@ import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { LuPlus, LuX } from 'react-icons/lu';
 import { FaHandHoldingHeart } from 'react-icons/fa';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
+
+import { useAuth } from '../../context/AuthContext';
 
 const TYPES = ['Offering', 'Donation', 'Seed'];
 const PAYMENT_METHODS = ['Cash', 'Mobile Money', 'Bank Transfer', 'Cheque'];
@@ -15,10 +18,13 @@ const TYPE_STYLES = {
 };
 
 export default function OfferingPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role_id === 1;
   const [offerings, setOfferings] = useState([]);
   const [summary, setSummary] = useState([]);
   const [activeTab, setActiveTab] = useState('Offering');
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,8 +38,13 @@ export default function OfferingPage() {
     try { const res = await API.get('/offerings/summary'); setSummary(Array.isArray(res.data) ? res.data : []); } catch {}
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -68,10 +79,12 @@ export default function OfferingPage() {
             <h1 className="text-3xl font-bold">Offerings</h1>
             <p className="text-sm opacity-80 mt-1">"Each of you should give what you have decided" — 2 Cor 9:7</p>
           </div>
-          <button onClick={() => { setForm({ ...EMPTY_FORM, type: activeTab }); setShowModal(true); }}
-            className="flex items-center gap-2 bg-white text-violet-700 hover:bg-violet-50 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow whitespace-nowrap">
-            <LuPlus /> Record {activeTab}
-          </button>
+          {!isAdmin && (
+            <button onClick={() => { setForm({ ...EMPTY_FORM, type: activeTab }); setShowModal(true); }}
+              className="flex items-center gap-2 bg-white text-violet-700 hover:bg-violet-50 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow whitespace-nowrap">
+              <LuPlus /> Record {activeTab}
+            </button>
+          )}
         </div>
       </div>
 
@@ -132,8 +145,8 @@ export default function OfferingPage() {
         </div>
       </div>
 
-      {/* Modal */}
-      {showModal && (
+      {/* Modal — finance only */}
+      {showModal && !isAdmin && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
             <div className={`bg-gradient-to-r ${TYPE_STYLES[form.type]?.bg} px-6 py-4 flex items-center justify-between`}>
@@ -189,13 +202,21 @@ export default function OfferingPage() {
                 <button type="button" onClick={() => setShowModal(false)}
                   className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
                 <button type="submit" disabled={submitting}
-                  className={`flex-1 bg-gradient-to-r ${TYPE_STYLES[form.type]?.bg} text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60 disabled:cursor-not-allowed`}>
+                  className={`flex-1 bg-gradient-to-r ${TYPE_STYLES[form.type]?.bg} text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60`}>
                   {submitting ? 'Saving...' : `Save ${form.type}`}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmDialog
+          message={`Record a ${form.type} of GH₵ ${Number(form.amount).toLocaleString()}?`}
+          onConfirm={confirmSubmit}
+          onCancel={() => setShowConfirm(false)}
+        />
       )}
     </div>
   );

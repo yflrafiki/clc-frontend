@@ -3,11 +3,16 @@ import API from '../../api/axios';
 import toast from 'react-hot-toast';
 import { LuPlus, LuX, LuReceipt, LuWallet } from 'react-icons/lu';
 import { FaUniversity } from 'react-icons/fa';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
+
+import { useAuth } from '../../context/AuthContext';
 
 const CATEGORIES = ['Tithe', 'Welfare', 'Offering', 'Donation', 'Seed'];
 const EMPTY_FORM = { category: 'Tithe', amount: '', bank_name: '', transaction_date: '', notes: '', receipt_image: null };
 
 export default function AccountsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role_id === 1;
   const [summary, setSummary] = useState(null);
   const [receipts, setReceipts] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +20,7 @@ export default function AccountsPage() {
   const [activeTab, setActiveTab] = useState('summary');
   const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => { fetchSummary(); fetchReceipts(); }, []);
 
@@ -34,9 +40,14 @@ export default function AccountsPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.receipt_image) return toast.error('Please attach a receipt image');
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -77,12 +88,14 @@ export default function AccountsPage() {
               <span className="text-xs font-semibold uppercase tracking-widest opacity-80">Accounts Department</span>
             </div>
             <h1 className="text-3xl font-bold">Financial Accounts</h1>
-            <p className="text-sm opacity-80 mt-1">Manage all church finances and bank receipts</p>
+            <p className="text-sm opacity-80 mt-1">{isAdmin ? 'View all church financial records' : 'Manage all church finances and bank receipts'}</p>
           </div>
-          <button onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-50 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow whitespace-nowrap">
-            <LuPlus /> Upload Receipt
-          </button>
+          {!isAdmin && (
+            <button onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-50 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow whitespace-nowrap">
+              <LuPlus /> Upload Receipt
+            </button>
+          )}
         </div>
       </div>
 
@@ -150,8 +163,8 @@ export default function AccountsPage() {
         </div>
       )}
 
-      {/* Upload Modal */}
-      {showModal && (
+      {/* Upload Modal — finance only */}
+      {showModal && !isAdmin && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
             <div className="bg-gradient-to-r from-slate-800 to-zinc-600 px-6 py-4 flex items-center justify-between">
@@ -206,13 +219,21 @@ export default function AccountsPage() {
                 <button type="button" onClick={() => { setShowModal(false); setPreview(null); }}
                   className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
                 <button type="submit" disabled={submitting}
-                  className="flex-1 bg-gradient-to-r from-slate-800 to-zinc-600 hover:from-slate-900 hover:to-zinc-700 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60 disabled:cursor-not-allowed">
+                  className="flex-1 bg-gradient-to-r from-slate-800 to-zinc-600 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60">
                   {submitting ? 'Uploading...' : 'Upload Receipt'}
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmDialog
+          message={`Upload a ${form.category} receipt of GH₵ ${Number(form.amount).toLocaleString()} from ${form.bank_name || 'the bank'}?`}
+          onConfirm={confirmSubmit}
+          onCancel={() => setShowConfirm(false)}
+        />
       )}
     </div>
   );

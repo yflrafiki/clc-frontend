@@ -1,22 +1,34 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaCross, FaUsers, FaHeart, FaHandHoldingHeart, FaUniversity } from 'react-icons/fa';
-import { LuLayoutDashboard, LuClipboardList, LuChartBar, LuX } from 'react-icons/lu';
+import { LuLayoutDashboard, LuClipboardList, LuChartBar, LuX, LuLogOut } from 'react-icons/lu';
+import { useAuth } from '../../context/AuthContext';
 
-const NAV_ITEMS = [
-  { to: '/dashboard',  label: 'Dashboard',  Icon: LuLayoutDashboard,    active: 'bg-indigo-700'  },
-  { to: '/members',    label: 'Members',    Icon: FaUsers,               active: 'bg-indigo-700'  },
-  { to: '/attendance', label: 'Attendance', Icon: LuClipboardList,       active: 'bg-rose-700'    },
-  { to: '/tithes',     label: 'Tithes',     Icon: FaCross,               active: 'bg-amber-700'   },
-  { to: '/welfare',    label: 'Welfare',    Icon: FaHeart,               active: 'bg-emerald-700' },
-  { to: '/offerings',  label: 'Offerings',  Icon: FaHandHoldingHeart,    active: 'bg-violet-700'  },
-  { to: '/accounts',   label: 'Accounts',   Icon: FaUniversity,          active: 'bg-slate-700'   },
-  { to: '/reports',    label: 'Reports',    Icon: LuChartBar,            active: 'bg-purple-700'  },
+const ALL_NAV = [
+  { to: '/dashboard',  label: 'Dashboard',  Icon: LuLayoutDashboard, active: 'bg-indigo-700',  roles: [1,2,3,4] },
+  { to: '/members',    label: 'Members',    Icon: FaUsers,            active: 'bg-indigo-700',  roles: [1,2]     },
+  { to: '/attendance', label: 'Attendance', Icon: LuClipboardList,    active: 'bg-rose-700',    roles: [2]       },
+  { to: '/tithes',     label: 'Tithes',     Icon: FaCross,            active: 'bg-amber-700',   roles: [3]       },
+  { to: '/welfare',    label: 'Welfare',    Icon: FaHeart,            active: 'bg-emerald-700', roles: [3]       },
+  { to: '/offerings',  label: 'Offerings',  Icon: FaHandHoldingHeart, active: 'bg-violet-700',  roles: [1,3]     },
+  { to: '/accounts',   label: 'Accounts',   Icon: FaUniversity,       active: 'bg-slate-700',   roles: [1,3]     },
+  { to: '/reports',    label: 'Reports',    Icon: LuChartBar,         active: 'bg-purple-700',  roles: [1,4]     },
 ];
 
+const ROLE_LABELS = { 1: 'Admin', 2: 'Members Dept', 3: 'Finance Dept', 4: 'Assistant' };
 const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
 
 export default function Sidebar({ onClose }) {
   const { pathname } = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const roleId = user?.role_id;
+  const navItems = ALL_NAV.filter(item => item.roles.includes(roleId));
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="w-64 h-full min-h-screen bg-gray-950 text-white flex flex-col">
@@ -30,7 +42,7 @@ export default function Sidebar({ onClose }) {
               <FaCross className="text-white text-sm" />
             </div>
             <div>
-              <p className="text-sm font-bold leading-tight">Christian Life Way</p>
+              <p className="text-sm font-bold leading-tight">LifeWay Church</p>
               <p className="text-xs text-white/40 leading-tight">Church RMS</p>
             </div>
           </div>
@@ -40,9 +52,19 @@ export default function Sidebar({ onClose }) {
         </div>
       </div>
 
+      {/* Role badge */}
+      {user && (
+        <div className="px-5 py-3 border-b border-white/10">
+          <p className="text-xs text-white/50 truncate">{user.full_name}</p>
+          <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-white/70">
+            {ROLE_LABELS[user.role_id] || 'User'}
+          </span>
+        </div>
+      )}
+
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {NAV_ITEMS.map(({ to, label, Icon, active }) => {
+        {navItems.map(({ to, label, Icon, active }) => {
           const isActive = pathname === to;
           return (
             <Link key={to} to={to} onClick={onClose}
@@ -55,6 +77,14 @@ export default function Sidebar({ onClose }) {
           );
         })}
       </nav>
+
+      {/* Logout */}
+      <div className="px-3 pb-3">
+        <button onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-red-700/40 transition">
+          <LuLogOut className="text-base" /> Logout
+        </button>
+      </div>
 
       {/* Scripture Footer */}
       <div className="px-5 py-4 border-t border-white/10">
