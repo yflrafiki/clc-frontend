@@ -41,8 +41,8 @@ export default function Login() {
             <FaCross className="text-white text-3xl" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Christian Life Way</h1>
-            <p className="text-sm text-white/50 mt-1 uppercase tracking-widest">Church Record Management</p>
+            <h1 className="text-3xl font-bold">LifeWay Church</h1>
+            {/* <p className="text-sm text-white/50 mt-1 uppercase tracking-widest">Church Record Management</p> */}
           </div>
           <div className="border-t border-white/10 pt-6 space-y-4 w-full">
             {[
