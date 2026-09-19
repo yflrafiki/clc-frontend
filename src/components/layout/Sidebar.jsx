@@ -1,21 +1,33 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaCross, FaUsers, FaHeart, FaHandHoldingHeart, FaUniversity } from 'react-icons/fa';
-import { LuLayoutDashboard, LuClipboardList, LuChartBar, LuX, LuLogOut } from 'react-icons/lu';
+import {
+  Landmark,
+  LayoutDashboard,
+  ClipboardList,
+  ChartColumn,
+  X,
+  LogOut,
+  Printer,
+  Users,
+  HeartHandshake,
+  HandCoins,
+  Wallet,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const ALL_NAV = [
-  { to: '/dashboard',  label: 'Dashboard',  Icon: LuLayoutDashboard, active: 'bg-indigo-700',  roles: [1,2,3,4] },
-  { to: '/members',    label: 'Members',    Icon: FaUsers,            active: 'bg-indigo-700',  roles: [1,2]     },
-  { to: '/attendance', label: 'Attendance', Icon: LuClipboardList,    active: 'bg-rose-700',    roles: [2]       },
-  { to: '/tithes',     label: 'Tithes',     Icon: FaCross,            active: 'bg-amber-700',   roles: [3]       },
-  { to: '/welfare',    label: 'Welfare',    Icon: FaHeart,            active: 'bg-emerald-700', roles: [3]       },
-  { to: '/offerings',  label: 'Offerings',  Icon: FaHandHoldingHeart, active: 'bg-violet-700',  roles: [1,3]     },
-  { to: '/accounts',   label: 'Accounts',   Icon: FaUniversity,       active: 'bg-slate-700',   roles: [1,3]     },
-  { to: '/reports',    label: 'Reports',    Icon: LuChartBar,         active: 'bg-purple-700',  roles: [1,4]     },
+  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, active: 'bg-[#c59a5a]', roles: [1, 2, 3, 4] },
+  { to: '/members', label: 'Members', Icon: Users, active: 'bg-[#4d6c8b]', roles: [1, 2] },
+  { to: '/attendance', label: 'Attendance', Icon: ClipboardList, active: 'bg-[#a85d48]', roles: [2] },
+  { to: '/tithes', label: 'Tithes', Icon: HandCoins, active: 'bg-[#b86442]', roles: [3] },
+  { to: '/welfare', label: 'Welfare', Icon: HeartHandshake, active: 'bg-[#2e4a3d]', roles: [3] },
+  { to: '/offerings', label: 'Offerings', Icon: Wallet, active: 'bg-[#6f5aa6]', roles: [1, 3] },
+  { to: '/accounts', label: 'Accounts', Icon: Landmark, active: 'bg-[#33556e]', roles: [1, 3, 4] },
+  { to: '/prints', label: 'Prints', Icon: Printer, active: 'bg-[#5a8a6e]', roles: [3] },
+  { to: '/reports', label: 'Reports', Icon: ChartColumn, active: 'bg-[#7c5a7a]', roles: [1, 4] },
 ];
 
 const ROLE_LABELS = { 1: 'Admin', 2: 'Members Dept', 3: 'Finance Dept', 4: 'Assistant' };
-const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
+const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
 
 export default function Sidebar({ onClose }) {
   const { pathname } = useLocation();
@@ -31,64 +43,67 @@ export default function Sidebar({ onClose }) {
   };
 
   return (
-    <div className="w-64 h-full min-h-screen bg-gray-950 text-white flex flex-col">
-
-      {/* Branding */}
-      <div className="relative overflow-hidden px-5 py-6 border-b border-white/10">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: BG_PATTERN }}></div>
+    <div className="flex h-full min-h-screen w-64 flex-col border-r border-[#d9c5a6]/20 bg-[#1f2d3d] text-[#f8f5f1] shadow-[12px_0_40px_rgba(31,45,61,0.18)]">
+      <div className="relative overflow-hidden border-b border-[#f4e8d5]/10 bg-[#223245] px-5 py-6">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: BG_PATTERN }}></div>
         <div className="relative flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-600 to-yellow-500 flex items-center justify-center shadow">
-              <FaCross className="text-white text-sm" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#c59a5a] shadow-[0_10px_25px_rgba(197,154,90,0.35)]">
+              <Landmark className="text-sm text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold leading-tight">LifeWay Church</p>
-              <p className="text-xs text-white/40 leading-tight">Church RMS</p>
+              <p className="text-sm font-bold leading-tight text-white">LifeWay Church</p>
+              <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-[#e7d8bf]">Church RMS</p>
             </div>
           </div>
-          <button onClick={onClose} className="lg:hidden text-white/50 hover:text-white transition">
-            <LuX className="text-lg" />
+          <button onClick={onClose} className="text-[#f8f5f1]/60 transition hover:text-white lg:hidden">
+            <X className="text-lg" />
           </button>
         </div>
       </div>
 
-      {/* Role badge */}
       {user && (
-        <div className="px-5 py-3 border-b border-white/10">
-          <p className="text-xs text-white/50 truncate">{user.full_name}</p>
-          <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-white/70">
+        <div className="border-b border-[#f4e8d5]/10 bg-[#1d2b3a] px-5 py-3">
+          <p className="truncate text-xs text-[#f5d7b4]">{user.full_name}</p>
+          <span className="mt-1 inline-block rounded-full border border-[#d8b384]/20 bg-[#d8b384]/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#f8e9d5]">
             {ROLE_LABELS[user.role_id] || 'User'}
           </span>
         </div>
       )}
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 space-y-1.5 px-3 py-4">
         {navItems.map(({ to, label, Icon, active }) => {
           const isActive = pathname === to;
           return (
-            <Link key={to} to={to} onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                isActive ? `${active} text-white shadow` : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}>
-              <Icon className="text-base flex-shrink-0" />
+            <Link
+              key={to}
+              to={to}
+              onClick={onClose}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                isActive
+                  ? `${active} text-white shadow-[0_12px_28px_rgba(15,23,42,0.22)]`
+                  : 'text-[#e9dfd1] hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <Icon className="flex-shrink-0 text-base" />
               {label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
       <div className="px-3 pb-3">
-        <button onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-red-700/40 transition">
-          <LuLogOut className="text-base" /> Logout
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm font-medium text-[#f1e7dc] transition hover:border-[#b86442]/20 hover:bg-[#b86442]/15 hover:text-white"
+        >
+          <LogOut className="text-base" />
+          Logout
         </button>
       </div>
 
-      {/* Scripture Footer */}
-      <div className="px-5 py-4 border-t border-white/10">
-        <p className="text-xs text-white/30 italic text-center leading-relaxed">
+      <div className="border-t border-[#f4e8d5]/10 bg-[#1a2636] px-5 py-4">
+        <p className="text-center text-[11px] leading-relaxed text-[#d6c2a2] italic">
           "I can do all things through Christ" — Phil 4:13
         </p>
       </div>

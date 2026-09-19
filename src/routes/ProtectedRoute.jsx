@@ -8,7 +8,8 @@ const ROUTE_ROLES = {
   '/tithes':     [3],
   '/welfare':    [3],
   '/offerings':  [1, 3],
-  '/accounts':   [1, 3],
+  '/accounts':   [1, 3, 4],
+  '/prints':     [3],
   '/reports':    [1, 4],
 };
 

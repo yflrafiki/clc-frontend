@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
-import { FaUsers } from 'react-icons/fa';
-import { LuClipboardList, LuUserCheck, LuClock, LuSearch, LuCircleCheck } from 'react-icons/lu';
+import { Users, ClipboardList, UserCheck, Clock3, Search, CircleCheckBig } from 'lucide-react';
+import { useMembers } from '../../context/MembersContext';
 
 export default function AttendancePage() {
-  const [members, setMembers] = useState([]);
+  const { members, fetchMembers } = useMembers();
   const [marked, setMarked] = useState(new Set());
   const [search, setSearch] = useState('');
 
-  useEffect(() => { fetchMembers(); }, []);
-
-  const fetchMembers = async () => {
-    try { const res = await API.get('/members'); setMembers(res.data); } catch {}
-  };
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const markAttendance = async (memberId) => {
     try {
@@ -33,94 +31,95 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6">
-
-      {/* Header Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-rose-800 via-red-700 to-orange-600 p-6 text-white shadow-lg">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}></div>
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-1">
-            <LuClipboardList className="text-xl" />
-            <span className="text-xs font-semibold uppercase tracking-widest opacity-80">Service Attendance</span>
+      <div className="relative overflow-hidden rounded-[28px] border border-[#e7d9bd] bg-[#fffaf4] p-6 shadow-[var(--church-shadow)] md:p-8">
+        <div className="absolute inset-0 opacity-60" style={{ backgroundImage: 'linear-gradient(115deg, rgba(184,100,66,0.08) 0%, rgba(197,154,90,0.08) 32%, transparent 70%)' }}></div>
+        <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#d9c5a6] bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6d5d55]">
+              <ClipboardList className="text-[#b86442]" />
+              Service Attendance
+            </div>
+            <h1 className="church-title text-4xl text-[#223042] md:text-5xl">Attendance</h1>
+            <p className="mt-2 text-sm text-[#5d554d]">"Not giving up meeting together" — Hebrews 10:25</p>
           </div>
-          <h1 className="text-3xl font-bold">Attendance</h1>
-          <p className="text-sm opacity-80 mt-1">"Not giving up meeting together" — Hebrews 10:25</p>
+          <div className="rounded-[20px] border border-[#e7d9bd] bg-white px-4 py-3 text-left md:text-right">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-[#7d6a5d]">Today</p>
+            <p className="church-title mt-1 text-2xl text-[#1f2d3d]">{today}</p>
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { label: 'Total Members', value: members.length, Icon: FaUsers, bg: 'from-rose-50 to-red-50', border: 'border-rose-200', text: 'text-rose-800' },
-          { label: 'Marked Present', value: marked.size, Icon: LuUserCheck, bg: 'from-green-50 to-emerald-50', border: 'border-green-200', text: 'text-green-800' },
-          { label: 'Not Yet Marked', value: members.length - marked.size, Icon: LuClock, bg: 'from-orange-50 to-amber-50', border: 'border-orange-200', text: 'text-orange-800' },
+          { label: 'Total Members', value: members.length, Icon: Users, bg: 'bg-[#f9f1eb]', border: 'border-[#e6d9c3]', text: 'text-[#1f2d3d]' },
+          { label: 'Marked Present', value: marked.size, Icon: UserCheck, bg: 'bg-[#edf4ef]', border: 'border-[#d8e4d8]', text: 'text-[#2e4a3d]' },
+          { label: 'Not Yet Marked', value: members.length - marked.size, Icon: Clock3, bg: 'bg-[#f8f1e7]', border: 'border-[#ecd9b8]', text: 'text-[#8a5f2d]' },
         ].map(({ label, value, Icon, bg, border, text }) => (
-          <div key={label} className={`bg-gradient-to-br ${bg} border ${border} rounded-xl p-5`}>
+          <div key={label} className={`rounded-[22px] border ${border} ${bg} p-5 shadow-[0_12px_30px_rgba(31,45,61,0.04)]`}>
             <div className="flex items-center gap-3">
-              <Icon className={`text-2xl ${text}`} />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#b86442] shadow-sm">
+                <Icon className="text-xl" />
+              </div>
               <div>
-                <p className={`text-xl font-bold ${text}`}>{value}</p>
-                <p className={`text-xs font-medium ${text} opacity-70`}>{label}</p>
+                <p className={`text-2xl font-bold ${text}`}>{value}</p>
+                <p className={`text-[11px] font-medium uppercase tracking-[0.08em] ${text} opacity-80`}>{label}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Members List */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-rose-100 dark:border-gray-700 overflow-hidden">
-        <div className="px-4 py-3 border-b border-rose-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="overflow-hidden rounded-[26px] border border-[#e7d9bd] bg-white/90 shadow-[var(--church-shadow)]">
+        <div className="flex flex-col gap-3 border-b border-[#efe4d5] bg-[#faf5ef] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <LuClipboardList className="text-rose-600" />
-            <div>
-              <h2 className="font-semibold text-gray-700 dark:text-white text-sm">Today's Roll Call</h2>
-              <p className="text-xs text-gray-400">{today}</p>
-            </div>
+            <ClipboardList className="text-[#b86442]" />
+            <h2 className="church-title text-3xl text-[#1f2d3d]">Today's Roll Call</h2>
           </div>
-          <div className="relative">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a7b6c]" />
             <input
               type="text"
               placeholder="Search members..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-            className="w-full sm:w-64 border border-gray-200 dark:border-gray-600 rounded-lg pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full rounded-2xl border border-[#e6d9c3] bg-white pl-9 pr-3 py-2.5 text-sm text-[#1f2d3d] outline-none focus:border-[#c59a5a] focus:ring-2 focus:ring-[#c59a5a]/20"
             />
           </div>
         </div>
 
-        <div className="divide-y divide-rose-50 dark:divide-gray-700">
+        <div className="divide-y divide-[#f0e7db]">
           {filtered.length === 0 ? (
-            <div className="px-4 py-12 text-center">
-              <div className="flex flex-col items-center gap-2 text-gray-400">
-                <LuClipboardList className="text-4xl" />
+            <div className="px-4 py-12 text-center text-[#7d6a5d]">
+              <div className="flex flex-col items-center gap-2">
+                <ClipboardList className="text-4xl text-[#c59a5a]" />
                 <p className="text-sm">No members found.</p>
               </div>
             </div>
           ) : filtered.map((member) => {
             const isMarked = marked.has(member.id);
             return (
-              <div key={member.id} className={`flex items-center justify-between px-5 py-4 transition ${
-                isMarked ? 'bg-green-50 dark:bg-green-900/10' : 'hover:bg-rose-50 dark:hover:bg-gray-700'
+              <div key={member.id} className={`flex items-center justify-between gap-4 px-5 py-4 transition ${
+                isMarked ? 'bg-[#eef7f0]' : 'hover:bg-[#faf5ef]'
               }`}>
                 <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold ${
-                    isMarked ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${
+                    isMarked ? 'bg-[#dfeee3] text-[#2e4a3d]' : 'bg-[#f5dfd3] text-[#b86442]'
                   }`}>
                     {member.full_name?.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800 dark:text-white text-sm">{member.full_name}</p>
-                    <p className="text-xs text-gray-400">{member.membership_id || 'No ID'}</p>
+                    <p className="font-semibold text-[#1f2d3d]">{member.full_name}</p>
+                    <p className="text-xs text-[#7d6a5d]">{member.membership_id || 'No ID'}</p>
                   </div>
                 </div>
                 {isMarked ? (
-                  <span className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                    <LuCircleCheck /> Present
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#dfeee3] px-3 py-1 text-xs font-semibold text-[#2e4a3d]">
+                    <CircleCheckBig /> Present
                   </span>
                 ) : (
                   <button
                     onClick={() => markAttendance(member.id)}
-                    className="bg-gradient-to-r from-rose-800 to-orange-600 hover:from-rose-900 hover:to-orange-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition shadow"
+                    className="rounded-xl bg-[#1f2d3d] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#2a3d4f]"
                   >
                     Mark Present
                   </button>

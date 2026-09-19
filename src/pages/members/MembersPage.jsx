@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
-import { FaUsers, FaUserCheck, FaUserTimes } from 'react-icons/fa';
-import { LuUserPlus, LuSearch, LuX } from 'react-icons/lu';
+import { Users, UserCheck, UserRoundX, UserPlus, Search, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useMembers } from '../../context/MembersContext';
 
 const EMPTY_FORM = {
   full_name: '', email: '', gender: '', date_of_birth: '', phone_number: '',
@@ -12,20 +12,24 @@ const EMPTY_FORM = {
 
 export default function MembersPage() {
   const { user } = useAuth();
+  const { members, fetchMembers } = useMembers();
   const isAdmin = user?.role_id === 1;
-
-  const [members, setMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchMembers = async () => {
-    try { const res = await API.get('/members'); setMembers(res.data); }
-    catch { toast.error('Failed to load members'); }
-  };
+  useEffect(() => {
+    const loadMembers = async () => {
+      try {
+        await fetchMembers(true);
+      } catch {
+        toast.error('Failed to load members');
+      }
+    };
 
-  useEffect(() => { fetchMembers(); }, []);
+    loadMembers();
+  }, [fetchMembers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +40,7 @@ export default function MembersPage() {
       toast.success('Member added successfully');
       setForm(EMPTY_FORM);
       setShowModal(false);
-      fetchMembers();
+      fetchMembers(true);
     } catch {
       toast.error('Failed to add member');
     } finally {
@@ -53,90 +57,89 @@ export default function MembersPage() {
 
   return (
     <div className="space-y-6">
-
-      {/* Header */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-800 via-blue-700 to-sky-600 p-6 text-white shadow-lg">
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="relative overflow-hidden rounded-[28px] border border-[#e7d9bd] bg-[#fffaf4] p-6 shadow-[var(--church-shadow)] md:p-8">
+        <div className="absolute inset-0 opacity-60" style={{ backgroundImage: 'linear-gradient(115deg, rgba(31,45,61,0.08) 0%, rgba(197,154,90,0.08) 35%, transparent 72%)' }}></div>
+        <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <FaUsers className="text-xl" />
-              <span className="text-xs font-semibold uppercase tracking-widest opacity-80">Church Members</span>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#d9c5a6] bg-white/80 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6d5d55]">
+              <Users className="text-[#b86442]" />
+              Church Members
             </div>
-            <h1 className="text-3xl font-bold">Members</h1>
-            <p className="text-sm opacity-80 mt-1">"You are the body of Christ" — 1 Corinthians 12:27</p>
+            <h1 className="church-title text-4xl text-[#223042] md:text-5xl">Members</h1>
+            <p className="mt-2 text-sm text-[#5d554d]">"You are the body of Christ" — 1 Corinthians 12:27</p>
           </div>
           {!isAdmin && (
             <button onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 bg-white text-indigo-800 hover:bg-indigo-50 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow whitespace-nowrap">
-              <LuUserPlus /> Add Member
+              className="inline-flex items-center gap-2 rounded-xl bg-[#1f2d3d] px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#2a3d4f]">
+              <UserPlus className="h-4 w-4" /> Add Member
             </button>
           )}
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
-          { label: 'Total Members', value: members.length, Icon: FaUsers, bg: 'from-indigo-50 to-blue-50', border: 'border-indigo-200', text: 'text-indigo-800' },
-          { label: 'Active', value: active, Icon: FaUserCheck, bg: 'from-green-50 to-emerald-50', border: 'border-green-200', text: 'text-green-800' },
-          { label: 'Inactive', value: members.length - active, Icon: FaUserTimes, bg: 'from-red-50 to-rose-50', border: 'border-red-200', text: 'text-red-800' },
+          { label: 'Total Members', value: members.length, Icon: Users, bg: 'bg-[#eef3fa]', border: 'border-[#dfeaf7]', text: 'text-[#1f2d3d]' },
+          { label: 'Active', value: active, Icon: UserCheck, bg: 'bg-[#edf4ef]', border: 'border-[#d8e4d8]', text: 'text-[#2e4a3d]' },
+          { label: 'Inactive', value: members.length - active, Icon: UserRoundX, bg: 'bg-[#f8f1ef]', border: 'border-[#e9d0ca]', text: 'text-[#8a4c3a]' },
         ].map(({ label, value, Icon, bg, border, text }) => (
-          <div key={label} className={`bg-gradient-to-br ${bg} border ${border} rounded-xl p-5`}>
+          <div key={label} className={`rounded-[22px] border ${border} ${bg} p-5 shadow-[0_12px_30px_rgba(31,45,61,0.04)]`}>
             <div className="flex items-center gap-3">
-              <Icon className={`text-2xl ${text}`} />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#b86442] shadow-sm">
+                <Icon className="text-xl" />
+              </div>
               <div>
-                <p className={`text-xl font-bold ${text}`}>{value}</p>
-                <p className={`text-xs font-medium ${text} opacity-70`}>{label}</p>
+                <p className={`text-2xl font-bold ${text}`}>{value}</p>
+                <p className={`text-[11px] font-medium uppercase tracking-[0.08em] ${text} opacity-80`}>{label}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-indigo-100 dark:border-gray-700 overflow-hidden">
-        <div className="px-4 py-3 border-b border-indigo-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="overflow-hidden rounded-[26px] border border-[#e7d9bd] bg-white/90 shadow-[var(--church-shadow)]">
+        <div className="flex flex-col gap-3 border-b border-[#efe4d5] bg-[#faf5ef] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <FaUsers className="text-indigo-600" />
-            <h2 className="font-semibold text-gray-700 dark:text-white text-sm">Church Members</h2>
+            <Users className="text-[#b86442]" />
+            <h2 className="church-title text-3xl text-[#1f2d3d]">Church Members</h2>
           </div>
-          <div className="relative">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a7b6c]" />
             <input type="text" placeholder="Search by name or email..." value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full sm:w-72 border border-gray-200 dark:border-gray-600 rounded-lg pl-8 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              className="w-full rounded-2xl border border-[#e6d9c3] bg-white pl-9 pr-3 py-2.5 text-sm text-[#1f2d3d] outline-none focus:border-[#c59a5a] focus:ring-2 focus:ring-[#c59a5a]/20" />
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-indigo-50 dark:bg-gray-700 text-indigo-800 dark:text-indigo-300 uppercase text-xs">
+            <thead className="bg-[#f7f1e8] text-[#584f47] uppercase text-[10px] tracking-[0.14em]">
               <tr>
                 {['ID', 'Name', 'Email', 'Gender', 'Phone', 'Address', 'Status'].map(h => (
                   <th key={h} className="px-4 py-3 text-left font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-indigo-50 dark:divide-gray-700">
+            <tbody className="divide-y divide-[#f3eadf]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center">
-                    <div className="flex flex-col items-center gap-2 text-gray-400">
-                      <FaUsers className="text-4xl" />
+                  <td colSpan={7} className="px-4 py-12 text-center text-[#7d6a5d]">
+                    <div className="flex flex-col items-center gap-2">
+                      <Users className="text-4xl text-[#c59a5a]" />
                       <p className="text-sm">{isAdmin ? 'No members found.' : 'No members found. Add the first one!'}</p>
                     </div>
                   </td>
                 </tr>
               ) : filtered.map(m => (
-                <tr key={m.id} className="hover:bg-indigo-50 dark:hover:bg-gray-700 transition">
-                  <td className="px-4 py-3 text-gray-400 text-xs">{m.membership_id || '—'}</td>
-                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-white">{m.full_name}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{m.email || '—'}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{m.gender || '—'}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{m.phone_number || '—'}</td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{m.address || '—'}</td>
+                <tr key={m.id} className="hover:bg-[#faf5ef] transition">
+                  <td className="px-4 py-3 text-[#8a7b6c] text-xs">{m.membership_id || '—'}</td>
+                  <td className="px-4 py-3 font-medium text-[#1f2d3d]">{m.full_name}</td>
+                  <td className="px-4 py-3 text-[#5d554d]">{m.email || '—'}</td>
+                  <td className="px-4 py-3 text-[#5d554d]">{m.gender || '—'}</td>
+                  <td className="px-4 py-3 text-[#5d554d]">{m.phone_number || '—'}</td>
+                  <td className="px-4 py-3 text-[#5d554d]">{m.address || '—'}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      m.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+                      m.status === 'Active' ? 'bg-[#dfeee3] text-[#2e4a3d]' : 'bg-[#f7e4df] text-[#8a4c3a]'
                     }`}>{m.status}</span>
                   </td>
                 </tr>
@@ -146,23 +149,22 @@ export default function MembersPage() {
         </div>
       </div>
 
-      {/* Modal — members dept only */}
       {showModal && !isAdmin && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-800 to-sky-600 px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-white">
-                <LuUserPlus />
+          <div className="w-full max-w-lg overflow-hidden rounded-[28px] border border-[#e7d9bd] bg-white shadow-[var(--church-shadow)] mx-4">
+            <div className="flex items-center justify-between bg-[#1f2d3d] px-6 py-4 text-white">
+              <div className="flex items-center gap-2">
+                <UserPlus />
                 <h2 className="text-base font-semibold">Add New Member</h2>
               </div>
-              <button onClick={() => setShowModal(false)} className="text-white/70 hover:text-white"><LuX /></button>
+              <button onClick={() => setShowModal(false)} className="text-white/70 hover:text-white"><X /></button>
             </div>
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 px-6 py-3 border-b border-indigo-100 dark:border-indigo-800">
-              <p className="text-xs text-indigo-700 dark:text-indigo-400 italic text-center">
+            <div className="border-b border-[#efe4d5] bg-[#faf5ef] px-6 py-3">
+              <p className="text-center text-xs italic text-[#5d554d]">
                 "Welcome one another as Christ has welcomed you" — Romans 15:7
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 px-4 py-4 sm:grid-cols-2">
               {[
                 { label: 'Full Name',         key: 'full_name',         type: 'text',  required: true },
                 { label: 'Email Address',     key: 'email',             type: 'email' },
@@ -172,41 +174,41 @@ export default function MembersPage() {
                 { label: 'Address',           key: 'address',           type: 'text' },
                 { label: 'Emergency Contact', key: 'emergency_contact', type: 'text' },
               ].map(({ label, key, type, required }) => (
-                <div key={key} className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</label>
+                <div key={key} className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#705f53]">{label}</label>
                   <input type={type} required={required} value={form[key]}
                     onChange={e => setForm({ ...form, [key]: e.target.value })}
-                    className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    className="rounded-2xl border border-[#e6d9c3] bg-[#faf5ef] px-3 py-2.5 text-sm text-[#1f2d3d] outline-none focus:border-[#c59a5a] focus:ring-2 focus:ring-[#c59a5a]/20" />
                 </div>
               ))}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Gender</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#705f53]">Gender</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['Male', 'Female'].map(g => (
                     <button type="button" key={g} onClick={() => setForm({ ...form, gender: g })}
-                      className={`py-2 px-3 rounded-lg text-xs font-semibold border transition ${
-                        form.gender === g ? 'bg-indigo-700 text-white border-indigo-700' : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-indigo-400'
+                      className={`rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition ${
+                        form.gender === g ? 'border-[#1f2d3d] bg-[#1f2d3d] text-white' : 'border-[#e6d9c3] bg-[#faf5ef] text-[#5d554d]'
                       }`}>{g}</button>
                   ))}
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Status</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#705f53]">Status</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['Active', 'Inactive'].map(s => (
                     <button type="button" key={s} onClick={() => setForm({ ...form, status: s })}
-                      className={`py-2 px-3 rounded-lg text-xs font-semibold border transition ${
-                        form.status === s ? 'bg-indigo-700 text-white border-indigo-700' : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-indigo-400'
+                      className={`rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition ${
+                        form.status === s ? 'border-[#1f2d3d] bg-[#1f2d3d] text-white' : 'border-[#e6d9c3] bg-[#faf5ef] text-[#5d554d]'
                       }`}>{s}</button>
                   ))}
                 </div>
               </div>
               <div className="md:col-span-2 flex gap-3 pt-1">
                 <button type="button" onClick={() => setShowModal(false)}
-                  className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">Cancel</button>
+                  className="flex-1 rounded-xl border border-[#e6d9c3] bg-[#faf5ef] py-2.5 text-sm font-medium text-[#5d554d] transition hover:bg-[#f4efe8]">Cancel</button>
                 <button type="submit" disabled={submitting}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-800 to-sky-600 text-white py-2 rounded-lg text-sm font-semibold transition shadow disabled:opacity-60">
-                  <LuUserPlus /> {submitting ? 'Saving...' : 'Add Member'}
+                  className="flex-1 rounded-xl bg-[#1f2d3d] py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#2a3d4f] disabled:opacity-60">
+                  <span className="inline-flex items-center gap-2"><UserPlus /> {submitting ? 'Saving...' : 'Add Member'}</span>
                 </button>
               </div>
             </form>

@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { FaCross } from 'react-icons/fa';
-import { LuLogOut, LuBell, LuMenu } from 'react-icons/lu';
+import { Landmark, LogOut, Bell, Menu } from 'lucide-react';
 
 const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
@@ -8,6 +7,7 @@ const PAGE_TITLES = {
   '/attendance': 'Attendance',
   '/tithes': 'Tithes & Offerings',
   '/welfare': 'Welfare & Benevolence',
+  '/prints': 'Finance Prints',
   '/reports': 'Reports & Exports',
 };
 
@@ -16,53 +16,48 @@ export default function Navbar({ onMenuClick }) {
   const title = PAGE_TITLES[pathname] || 'Church RMS';
 
   return (
-    <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm">
-
-      {/* Left */}
-      <div className="flex items-center gap-3">
-        {/* Hamburger — mobile only */}
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition"
-        >
-          <LuMenu className="text-xl" />
-        </button>
-
+    <div className="sticky top-0 z-10 border-b border-[#eadcc5] bg-[#f8f3ee]/90 px-4 py-3 backdrop-blur-sm md:px-6">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex w-7 h-7 rounded-md bg-gradient-to-br from-amber-600 to-yellow-500 items-center justify-center shadow-sm">
-            <FaCross className="text-white text-xs" />
-          </div>
-          <div>
-            <p className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium leading-none mb-0.5">LifeWay Church</p>
-            <h2 className="text-sm font-bold text-gray-800 dark:text-white leading-none">{title}</h2>
+          <button
+            onClick={onMenuClick}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#d9c5a6] bg-white text-[#2f4054] transition hover:border-[#b86442] hover:text-[#b86442] lg:hidden"
+          >
+            <Menu className="text-xl" />
+          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden h-9 w-9 items-center justify-center rounded-xl bg-[#c59a5a] text-white shadow-[0_10px_20px_rgba(197,154,90,0.25)] sm:flex">
+              <Landmark className="text-xs" />
+            </div>
+            <div>
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.25em] text-[#7c705d] sm:block">LifeWay Church</p>
+              <h2 className="church-title text-2xl leading-none text-[#1f2d3d]">{title}</h2>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Right */}
-      <div className="flex items-center gap-2 md:gap-3">
-        {/* Scripture pill — hidden on small screens */}
-        <div className="hidden lg:flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-full px-3 py-1">
-          <FaCross className="text-amber-600 text-xs" />
-          <span className="text-xs text-amber-700 dark:text-amber-400 italic">"To God be the glory"</span>
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="hidden items-center gap-2 rounded-full border border-[#e5d7be] bg-[#fffaf3] px-3 py-1.5 lg:flex">
+            <Landmark className="text-[#b86442] text-[10px]" />
+            <span className="text-[11px] italic text-[#5d554d]">"To God be the glory"</span>
+          </div>
+
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#e6d6ba] bg-white text-[#5d554d] transition hover:border-[#b86442] hover:text-[#b86442]">
+            <Bell className="text-base" />
+          </button>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem('token');
+              window.location.href = '/';
+            }}
+            className="flex items-center gap-1.5 rounded-xl bg-[#1f2d3d] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#344a62]"
+          >
+            <LogOut className="text-sm" />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
         </div>
-
-        {/* Bell */}
-        <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-          <LuBell className="text-base" />
-        </button>
-
-        {/* Logout */}
-        <button
-          onClick={() => {
-            localStorage.removeItem('token');
-            window.location.href = '/';
-          }}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm"
-        >
-          <LuLogOut className="text-sm" />
-          <span className="hidden sm:inline">Logout</span>
-        </button>
       </div>
     </div>
   );

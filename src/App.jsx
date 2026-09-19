@@ -21,6 +21,7 @@ const PROTECTED = [
   { path: '/welfare',    El: WelfarePage    },
   { path: '/offerings',  El: OfferingPage   },
   { path: '/accounts',   El: AccountsPage   },
+  { path: '/prints',     El: ReportsPage    },
   { path: '/reports',    El: ReportsPage    },
 ];
 
