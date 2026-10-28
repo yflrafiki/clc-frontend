@@ -116,8 +116,8 @@ export default function AttendancePage() {
       </div>
 
       <div className="flex flex-col gap-5 rounded-[26px] border border-[#e7d9bd] bg-white/90 p-5 shadow-[var(--church-shadow)] sm:flex-row sm:items-center">
-        <div className="mx-auto w-40 shrink-0 rounded-2xl border border-[#e6d9c3] bg-white p-3 sm:mx-0">
-          <QRCodeSVG value={checkInUrl()} size={256} level="M" marginSize={0} className="h-auto w-full" />
+        <div className="mx-auto w-44 shrink-0 rounded-2xl border border-[#e6d9c3] bg-white p-1 sm:mx-0">
+          <QRCodeSVG value={checkInUrl()} size={256} level="M" marginSize={4} bgColor="#ffffff" fgColor="#000000" className="h-auto w-full" />
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex items-center gap-2">

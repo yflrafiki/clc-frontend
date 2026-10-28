@@ -25,12 +25,24 @@ export default function CheckInPage() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    API.get('/attendance/services')
-      .then(({ data }) => {
+    let cancelled = false;
+
+    // The server sleeps when idle and can take up to a minute to wake, so retry a few times
+    const load = async (attempt = 1) => {
+      try {
+        const { data } = await API.get('/attendance/services', { timeout: 70000 });
+        if (cancelled) return;
         setServices(data);
         setService((current) => (data.includes(current) ? current : data[0]));
-      })
-      .catch(() => setError('Check-in is not reachable right now. Please see the front desk.'));
+      } catch {
+        if (cancelled) return;
+        if (attempt < 3) return load(attempt + 1);
+        setError('Check-in is not reachable right now. Refresh the page, or see the front desk.');
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const chooseService = (value) => {
@@ -191,6 +203,10 @@ export default function CheckInPage() {
               </div>
             )}
 
+            {services.length === 0 && !error && (
+              <p className="text-center text-xs text-[#7d6a5d]">Connecting to check-in. This can take up to a minute the first time.</p>
+            )}
+
             {error && (
               <p className="rounded-2xl border border-[#ecc9b8] bg-[#fbeee7] px-4 py-3 text-sm text-[#8a3f22]">{error}</p>
             )}
@@ -200,7 +216,7 @@ export default function CheckInPage() {
               disabled={busy || services.length === 0}
               className="w-full rounded-2xl bg-[#1f2d3d] px-4 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-[#2a3d4f] disabled:opacity-60"
             >
-              {busy ? 'Checking in…' : 'Mark me present'}
+              {busy ? 'Checking in…' : services.length === 0 ? 'Connecting…' : 'Mark me present'}
             </button>
           </form>
         )}

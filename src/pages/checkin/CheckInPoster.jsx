@@ -13,8 +13,8 @@ export default function CheckInPoster() {
         <h1 className="church-title mt-2 text-6xl text-[#1f2d3d]">Scan to check in</h1>
         <p className="mt-3 text-base text-[#5d554d]">Open your phone camera and point it at the code.</p>
 
-        <div className="mx-auto mt-8 w-full max-w-[22rem] rounded-[28px] border-2 border-[#1f2d3d] bg-white p-6">
-          <QRCodeSVG value={url} size={512} level="M" marginSize={0} className="h-auto w-full" />
+        <div className="mx-auto mt-8 w-full max-w-[22rem] rounded-[28px] border-2 border-[#1f2d3d] bg-white p-2">
+          <QRCodeSVG value={url} size={512} level="M" marginSize={4} bgColor="#ffffff" fgColor="#000000" className="h-auto w-full" />
         </div>
 
         <ol className="mx-auto mt-8 max-w-sm space-y-2 text-left text-base text-[#1f2d3d]">
