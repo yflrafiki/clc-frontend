@@ -1,0 +1,25 @@
+<!-- Paste into EmailJS: Email Templates > your template > Content > Edit Content > Code editor.
+     Subject: Welcome to {{church_name}}, {{first_name}}!
+     To Email: {{to_email}} -->
+<div style="margin:0;padding:24px 12px;background:#f5efe7;font-family:Arial,Helvetica,sans-serif;color:#1f2d3d;">
+  <div style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e7d9bd;border-radius:18px;overflow:hidden;">
+    <div style="background:#1f2d3d;padding:28px 24px;text-align:center;">
+      <p style="margin:0;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#e7d8bf;">{{church_name}}</p>
+      <h1 style="margin:8px 0 0;font-family:Georgia,serif;font-size:30px;font-weight:normal;color:#ffffff;">Welcome to the family</h1>
+    </div>
+    <div style="padding:28px 24px;font-size:15px;line-height:1.6;">
+      <p style="margin:0 0 14px;">Dear {{first_name}},</p>
+      <p style="margin:0 0 14px;">We are so glad you have joined {{church_name}}. You are now a registered member, and we look forward to worshipping and growing together.</p>
+      <div style="margin:22px 0;padding:18px;background:#f9f1eb;border:1px solid #e6d9c3;border-radius:14px;text-align:center;">
+        <p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#6d5d55;">Your member ID</p>
+        <p style="margin:6px 0 0;font-size:26px;font-weight:bold;letter-spacing:1px;color:#1f2d3d;">{{member_id}}</p>
+      </div>
+      <p style="margin:0 0 14px;">When you come to church, scan the QR code at the entrance and enter this ID to mark yourself present. Keep this email so you always have it.</p>
+      <p style="margin:0 0 22px;text-align:center;">
+        <a href="{{check_in_url}}" style="display:inline-block;background:#1f2d3d;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:bold;">Open check-in page</a>
+      </p>
+      <p style="margin:0;font-style:italic;color:#5d554d;">"Not giving up meeting together" — Hebrews 10:25</p>
+      <p style="margin:18px 0 0;">God bless you,<br>{{church_name}}</p>
+    </div>
+  </div>
+</div>

@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { Users, UserCheck, UserRoundX, UserPlus, Search, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useMembers } from '../../context/MembersContext';
+import { sendWelcomeEmail, welcomeEmailConfigured } from '../../services/welcomeEmail';
 
 const EMPTY_FORM = {
   full_name: '', email: '', gender: '', date_of_birth: '', phone_number: '',
@@ -36,11 +37,17 @@ export default function MembersPage() {
     if (submitting) return;
     setSubmitting(true);
     try {
-      await API.post('/members', form);
-      toast.success('Member added successfully');
+      const { data: member } = await API.post('/members', form);
+      toast.success(`Member added — ID ${member.membership_id}`);
       setForm(EMPTY_FORM);
       setShowModal(false);
       fetchMembers(true);
+
+      if (member.email && welcomeEmailConfigured) {
+        sendWelcomeEmail(member)
+          .then(() => toast.success(`Welcome email sent to ${member.email}`))
+          .catch(() => toast.error(`Member saved, but the welcome email to ${member.email} failed`));
+      }
     } catch {
       toast.error('Failed to add member');
     } finally {
