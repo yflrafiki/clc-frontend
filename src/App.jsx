@@ -10,6 +10,8 @@ import WelfarePage from './pages/welfare/WelfarePage';
 import ReportsPage from './pages/reports/ReportsPage';
 import OfferingPage from './pages/offerings/OfferingPage';
 import AccountsPage from './pages/accounts/AccountsPage';
+import CheckInPage from './pages/checkin/CheckInPage';
+import CheckInPoster from './pages/checkin/CheckInPoster';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 
@@ -30,6 +32,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/checkin" element={<CheckInPage />} />
+        <Route path="/checkin/poster" element={<CheckInPoster />} />
         {PROTECTED.map(({ path, El }) => (
           <Route key={path} path={path} element={
             <ProtectedRoute path={path}>
