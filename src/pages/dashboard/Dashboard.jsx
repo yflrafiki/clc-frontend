@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Landmark, Users, Heart, ChartColumn, Wallet, HandCoins, Sprout, ClipboardList, LayoutDashboard } from 'lucide-react';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import WeeklyAttendanceReport from '../../components/dashboard/WeeklyAttendanceReport';
 
 const BG_PATTERN = "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")";
 
@@ -86,6 +87,8 @@ export default function Dashboard() {
           </div>
         ))}
       </div>
+
+      {roleId === 1 && <WeeklyAttendanceReport />}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {isFinanceOrAdmin && (
